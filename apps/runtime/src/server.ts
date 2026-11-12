@@ -28,6 +28,7 @@ export function startServer(opts: { host: string; port: number; token: string; h
   const clients = new Set<WebSocket>();
 
   httpServer.on("upgrade", (req, socket, head) => {
+    socket.on("error", (err) => log(`[rpc] socket error: ${err.message}`));
     const origin = req.headers.origin;
     if (req.url !== "/rpc" || (origin && !ALLOWED_ORIGIN.test(origin))) {
       log(`[rpc] rejected upgrade url=${req.url} origin=${origin}`);
@@ -37,8 +38,11 @@ export function startServer(opts: { host: string; port: number; token: string; h
     wss.handleUpgrade(req, socket, head, (ws) => wss.emit("connection", ws, req));
   });
 
+  wss.on("error", (err) => log(`[rpc] server error: ${err.message}`));
+
   wss.on("connection", (ws: WebSocket) => {
     let authed = false;
+    ws.on("error", (err) => log(`[rpc] client error: ${err.message}`));
     const send = (m: ServerMessage) => ws.readyState === ws.OPEN && ws.send(JSON.stringify(m));
     const authTimer = setTimeout(() => !authed && ws.close(4401, "auth timeout"), 5000);
     ws.on("close", () => {
