@@ -129,11 +129,12 @@ export function routeUtterance(raw: string, ctx: IntentContext): RoutedIntent {
 
   const explain = /^(explain|what is|what are|what does|define|tell me about)\s+(.*?)\??$/.exec(t);
   if (explain && ctx.hasTask) {
-    const subject = (explain[2] ?? "").replace(/^(the|a|an|this)\s+/, "");
+    const raw = (explain[2] ?? "").trim();
+    if (/^(this|that|it)( (dependency|decision|change|file|risk|code|function|part))?$/.test(raw) || raw === "")
+      return ask({ type: "question.ask", text });
+    const subject = raw.replace(/^(the|a|an|this|that)\s+/, "");
     const c = bestMatch(subject, ctx.concepts, (x) => x.term);
     if (c) return ask({ type: "concept.explain", term: c.term, text });
-    if (/^(this|that|it)( (dependency|decision|change|file|risk))?$/.test(subject) || subject === "")
-      return ask({ type: "question.ask", text });
     return ask({ type: "concept.explain", term: subject, text });
   }
 

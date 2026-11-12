@@ -267,7 +267,7 @@ export async function fileAt(repo: string, rev: string, file: string): Promise<s
 
 export async function commitAll(worktree: string, message: string): Promise<string> {
   await git(worktree, ["add", "-A"]);
-  await git(worktree, ["commit", "-m", message, "--no-verify"]);
+  await git(worktree, ["commit", "-m", message]);
   return (await git(worktree, ["rev-parse", "HEAD"])).trim();
 }
 
