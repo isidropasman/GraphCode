@@ -1,0 +1,17 @@
+{
+  "name": "graphcode",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@10.34.9",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter @graphcode/runtime --filter @graphcode/desktop dev",
+    "runtime": "pnpm --filter @graphcode/runtime start",
+    "gui": "pnpm --filter @graphcode/desktop dev",
+    "desktop": "pnpm --filter @graphcode/desktop tauri dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test"
+  }
+}

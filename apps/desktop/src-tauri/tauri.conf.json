@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "GraphCode",
+  "version": "0.1.0",
+  "identifier": "dev.graphcode.app",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://127.0.0.1:5173",
+    "beforeBuildCommand": "pnpm build && pnpm --filter @graphcode/runtime build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [{ "title": "GraphCode", "width": 1440, "height": 900, "minWidth": 900, "minHeight": 600 }],
+    "security": {
+      "csp": "default-src 'self'; connect-src 'self' ws://127.0.0.1:* http://127.0.0.1:*; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' blob: mediastream:"
+    }
+  },
+  "bundle": { "active": false, "targets": "all" }
+}
