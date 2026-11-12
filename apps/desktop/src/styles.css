@@ -34,7 +34,7 @@ h1 { font-size: 20px; margin: 0; } h2 { font-size: 13px; text-transform: upperca
 .grow { flex: 1; min-width: 0; }
 .empty { color: var(--muted); font-style: italic; margin: 6px 0; }
 
-.app { display: grid; grid-template-rows: auto auto 1fr auto; height: 100%; }
+.app { display: flex; flex-direction: column; height: 100%; }
 .topbar { display: flex; align-items: center; gap: 16px; padding: 8px 14px; border-bottom: 1px solid var(--border); background: var(--panel); }
 .brand { display: flex; align-items: center; gap: 4px; }
 .crumbs { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; }
@@ -47,7 +47,7 @@ h1 { font-size: 20px; margin: 0; } h2 { font-size: 13px; text-transform: upperca
 .chip-plain { display: inline-flex; align-items: center; gap: 4px; }
 .topbar-actions { display: flex; gap: 6px; }
 .banner { padding: 6px 14px; font-size: 13px; } .banner-warn { background: color-mix(in srgb, var(--warn) 15%, transparent); }
-.body { display: flex; min-height: 0; }
+.body { display: flex; flex: 1; min-height: 0; }
 .sidebar { width: 230px; border-right: 1px solid var(--border); padding: 12px 8px; overflow: auto; background: var(--panel); flex-shrink: 0; }
 .sidebar ul { list-style: none; padding: 0; margin: 0; }
 .sidebar-title { font-weight: 600; padding: 0 8px 8px; }
