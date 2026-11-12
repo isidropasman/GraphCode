@@ -23,6 +23,19 @@ describe("task reducer", () => {
     expect(s.items.r1![0]!.status).toBe("completed");
   });
 
+  it("keeps a finished run finished when its bound event arrives late", () => {
+    seq = 0;
+    const s = replay([
+      ev("task.created", { task }),
+      ev("run.started", { run }),
+      ev("run.finished", { runId: "r1", status: "failed", error: "boom", finalMessage: null }),
+      ev("run.bound", { runId: "r1", threadId: "th", turnId: "tu", model: "m", providerVersion: "1" }),
+    ])!;
+    expect(s.runs[0]!.status).toBe("failed");
+    expect(s.runs[0]!.threadId).toBe("th");
+    expect(taskPhase(s)).toBe("failed");
+  });
+
   it("marks unattachable runs interrupted instead of running", () => {
     seq = 0;
     const s = replay([ev("task.created", { task }), ev("run.started", { run }), ev("run.state_unknown", { runId: "r1", reason: "restarted" })])!;

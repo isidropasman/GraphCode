@@ -97,7 +97,9 @@ export function applyEvent(state: TaskState | null, event: DomainEvent): TaskSta
       return { ...s, runs: [...s.runs, event.payload.run] };
     case "run.bound": {
       const { runId, threadId, turnId, model, providerVersion } = event.payload;
-      return { ...s, runs: updateRun(s, runId, { threadId, turnId, model, providerVersion, status: "running" }) };
+      const current = s.runs.find((r) => r.id === runId)?.status;
+      const status = current === "starting" || current === "running" ? "running" : current;
+      return { ...s, runs: updateRun(s, runId, { threadId, turnId, model, providerVersion, ...(status ? { status } : {}) }) };
     }
     case "run.plan_updated":
       return { ...s, plans: { ...s.plans, [event.payload.runId]: { explanation: event.payload.explanation, steps: event.payload.steps } } };
