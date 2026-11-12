@@ -45,6 +45,7 @@ const QUESTION_INSTRUCTIONS = `You are answering a reviewer's question inside Gr
 
 export class Orchestrator {
   private handles = new Map<string, RunHandle>(); // by runId
+  private verifying = new Set<string>(); // taskIds with a verification command running in the worktree
 
   constructor(
     private readonly db: Database,
@@ -158,6 +159,7 @@ export class Orchestrator {
     // One active writer per worktree. Read-only questions may run alongside nothing else either, to keep the thread linear.
     const active = activeRun(s0);
     if (active) throw new UserError("busy", `A ${active.kind} run is already active for this task. Wait for it or interrupt it.`);
+    if (kind !== "question") this.assertNotVerifying(taskId);
     if (s0.integration && kind !== "question") throw new UserError("conflict", "This task was already integrated.");
     const wt = await this.ensureWorktree(taskId);
     const runId = randomUUID();
@@ -333,6 +335,20 @@ export class Orchestrator {
   }
 
   async runVerification(taskId: string, command: string): Promise<{ evidenceId: string }> {
+    this.assertNotVerifying(taskId);
+    this.verifying.add(taskId);
+    try {
+      return await this.verifyNow(taskId, command);
+    } finally {
+      this.verifying.delete(taskId);
+    }
+  }
+
+  private assertNotVerifying(taskId: string): void {
+    if (this.verifying.has(taskId)) throw new UserError("busy", "A verification command is running in this worktree. Wait for it to finish.");
+  }
+
+  private async verifyNow(taskId: string, command: string): Promise<{ evidenceId: string }> {
     const s = this.requireTask(taskId);
     if (!s.worktree) throw new UserError("conflict", "No worktree");
     if (activeRun(s)) throw new UserError("busy", "Wait for the agent run to finish before verifying.");
@@ -401,6 +417,7 @@ export class Orchestrator {
     const s = this.requireTask(taskId);
     if (!s.worktree) throw new UserError("conflict", "No worktree");
     if (activeRun(s)) throw new UserError("busy", "Wait for the agent run to finish.");
+    this.assertNotVerifying(taskId);
     if (s.integration) throw new UserError("conflict", "Already committed.");
     await this.refreshChanges(taskId);
     const snap = this.requireTask(taskId).snapshot;
