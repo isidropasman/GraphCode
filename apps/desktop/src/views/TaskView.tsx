@@ -111,7 +111,7 @@ export function TaskView({ taskId, tab }: { taskId: string; tab: TaskTab }) {
           </button>
         ))}
       </div>
-      {tab === "objective" && <ObjectiveTab st={st} />}
+      {tab === "objective" && <ObjectiveTab key={st.task.id} st={st} />}
       {tab === "execution" && <Execution st={st} />}
       {tab === "understanding" && <Understanding st={st} />}
       {tab === "review" && <Review st={st} />}
